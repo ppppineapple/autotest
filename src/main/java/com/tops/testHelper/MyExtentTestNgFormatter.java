@@ -16,16 +16,13 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 
-
-
-
 public class MyExtentTestNgFormatter implements IReporter {
     //生成的路径以及文件名
     private static final String OUTPUT_FOLDER = "test-output/";
 
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
     String CurrentTime = df.format(new Date());
-    private final String FILE_NAME = CurrentTime+"TestResult.html";
+    private final String FILE_NAME = CurrentTime + "TestResult.html";
 
     private ExtentReports extent;
 
@@ -33,47 +30,47 @@ public class MyExtentTestNgFormatter implements IReporter {
     public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
         init();
         boolean createSuiteNode = false;
-        if(suites.size()>1){
-            createSuiteNode=true;
+        if (suites.size() > 1) {
+            createSuiteNode = true;
         }
         for (ISuite suite : suites) {
             Map<String, ISuiteResult> result = suite.getResults();
             //如果suite里面没有任何用例，直接跳过，不在报告里生成
-            if(result.size()==0){
+            if (result.size() == 0) {
                 continue;
             }
             //统计suite下的成功、失败、跳过的总用例数
-            int suiteFailSize=0;
-            int suitePassSize=0;
-            int suiteSkipSize=0;
-            ExtentTest suiteTest=null;
+            int suiteFailSize = 0;
+            int suitePassSize = 0;
+            int suiteSkipSize = 0;
+            ExtentTest suiteTest = null;
             //存在多个suite的情况下，在报告中将同一个一个suite的测试结果归为一类，创建一级节点。
-            if(createSuiteNode){
+            if (createSuiteNode) {
                 suiteTest = extent.createTest(suite.getName()).assignCategory(suite.getName());
             }
             boolean createSuiteResultNode = false;
-            if(result.size()>1){
-                createSuiteResultNode=true;
+            if (result.size() > 1) {
+                createSuiteResultNode = true;
             }
             for (ISuiteResult r : result.values()) {
                 ExtentTest resultNode;
                 ITestContext context = r.getTestContext();
-                if(createSuiteResultNode){
+                if (createSuiteResultNode) {
                     //没有创建suite的情况下，将在SuiteResult的创建为一级节点，否则创建为suite的一个子节点。
-                    if( null == suiteTest){
+                    if (null == suiteTest) {
                         resultNode = extent.createTest(r.getTestContext().getName());
-                    }else{
+                    } else {
                         resultNode = suiteTest.createNode(r.getTestContext().getName());
                     }
-                }else{
+                } else {
                     resultNode = suiteTest;
                 }
-                if(resultNode != null){
-                    resultNode.getModel().setName(suite.getName()+" : "+r.getTestContext().getName());
-                    if(resultNode.getModel().hasCategory()){
+                if (resultNode != null) {
+                    resultNode.getModel().setName(suite.getName() + " : " + r.getTestContext().getName());
+                    if (resultNode.getModel().hasCategory()) {
                         resultNode.assignCategory(r.getTestContext().getName());
-                    }else{
-                        resultNode.assignCategory(suite.getName(),r.getTestContext().getName());
+                    } else {
+                        resultNode.assignCategory(suite.getName(), r.getTestContext().getName());
                     }
                     resultNode.getModel().setStartTime(r.getTestContext().getStartDate());
                     resultNode.getModel().setEndTime(r.getTestContext().getEndDate());
@@ -84,18 +81,18 @@ public class MyExtentTestNgFormatter implements IReporter {
                     suitePassSize += passSize;
                     suiteFailSize += failSize;
                     suiteSkipSize += skipSize;
-                    if(failSize>0){
+                    if (failSize > 0) {
                         resultNode.getModel().setStatus(Status.FAIL);
                     }
-                    resultNode.getModel().setDescription(String.format("Pass: %s ; Fail: %s ; Skip: %s ;",passSize,failSize,skipSize));
+                    resultNode.getModel().setDescription(String.format("Pass: %s ; Fail: %s ; Skip: %s ;", passSize, failSize, skipSize));
                 }
-                buildTestNodes(resultNode,context.getFailedTests(), Status.FAIL);
-                buildTestNodes(resultNode,context.getSkippedTests(), Status.SKIP);
-                buildTestNodes(resultNode,context.getPassedTests(), Status.PASS);
+                buildTestNodes(resultNode, context.getFailedTests(), Status.FAIL);
+                buildTestNodes(resultNode, context.getSkippedTests(), Status.SKIP);
+                buildTestNodes(resultNode, context.getPassedTests(), Status.PASS);
             }
-            if(suiteTest!= null){
-                suiteTest.getModel().setDescription(String.format("Pass: %s ; Fail: %s ; Skip: %s ;",suitePassSize,suiteFailSize,suiteSkipSize));
-                if(suiteFailSize>0){
+            if (suiteTest != null) {
+                suiteTest.getModel().setDescription(String.format("Pass: %s ; Fail: %s ; Skip: %s ;", suitePassSize, suiteFailSize, suiteSkipSize));
+                if (suiteFailSize > 0) {
                     suiteTest.getModel().setStatus(Status.FAIL);
                 }
             }
@@ -110,8 +107,8 @@ public class MyExtentTestNgFormatter implements IReporter {
 
     private void init() {
         //文件夹不存在的话进行创建
-        File reportDir= new File(OUTPUT_FOLDER);
-        if(!reportDir.exists()&& !reportDir .isDirectory()){
+        File reportDir = new File(OUTPUT_FOLDER);
+        if (!reportDir.exists() && !reportDir.isDirectory()) {
             reportDir.mkdir();
         }
         ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(OUTPUT_FOLDER + FILE_NAME);
@@ -132,11 +129,11 @@ public class MyExtentTestNgFormatter implements IReporter {
 
     private void buildTestNodes(ExtentTest extenttest, IResultMap tests, Status status) {
         //存在父节点时，获取父节点的标签
-        String[] categories=new String[0];
-        if(extenttest != null ){
+        String[] categories = new String[0];
+        if (extenttest != null) {
             List<TestAttribute> categoryList = extenttest.getModel().getCategoryContext().getAll();
             categories = new String[categoryList.size()];
-            for(int index=0;index<categoryList.size();index++){
+            for (int index = 0; index < categoryList.size(); index++) {
                 categories[index] = categoryList.get(index).getName();
             }
         }
@@ -148,15 +145,15 @@ public class MyExtentTestNgFormatter implements IReporter {
             Set<ITestResult> treeSet = new TreeSet<ITestResult>(new Comparator<ITestResult>() {
 
                 public int compare(ITestResult o1, ITestResult o2) {
-                    return o1.getStartMillis()<o2.getStartMillis()?-1:1;
+                    return o1.getStartMillis() < o2.getStartMillis() ? -1 : 1;
                 }
             });
             treeSet.addAll(tests.getAllResults());
             for (ITestResult result : treeSet) {
                 Object[] parameters = result.getParameters();
-                String name="";
+                String name = "";
                 //如果有参数，则使用参数的toString组合代替报告中的name
-                for(Object param:parameters){
+                for (Object param : parameters) {
 //                    name+=param.toString();
 //                }
 //                if(name.length()>0){
@@ -166,9 +163,9 @@ public class MyExtentTestNgFormatter implements IReporter {
 //                }else{
                     name = result.getMethod().getMethodName();
                 }
-                if(extenttest==null){
+                if (extenttest == null) {
                     test = extent.createTest(name);
-                }else{
+                } else {
                     //作为子节点进行创建时，设置同父节点的标签一致，便于报告检索。
                     test = extenttest.createNode(name).assignCategory(categories);
                 }
@@ -178,14 +175,13 @@ public class MyExtentTestNgFormatter implements IReporter {
                     test.assignCategory(group);
 
                 List<String> outputList = Reporter.getOutput(result);
-                for(String output:outputList){
+                for (String output : outputList) {
                     //将用例的log输出报告中
                     test.debug(output);
                 }
                 if (result.getThrowable() != null) {
                     test.log(status, result.getThrowable());
-                }
-                else {
+                } else {
                     test.log(status, "Test " + status.toString().toLowerCase() + "ed");
                 }
 

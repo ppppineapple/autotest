@@ -20,7 +20,7 @@ import com.tops.testHelper.ReadExcel;
 import net.sf.json.JSONObject;
 
 public class CheckDestinationListTest {
-    protected String caseExcelPath =System.getProperty("user.dir")+"/javaexcel/CheckDestinationDetailTest.xlsx";
+    protected String caseExcelPath = System.getProperty("user.dir") + "/javaexcel/CheckDestinationDetailTest.xlsx";
 
     @DataProvider(name = "dataInfo")
     protected Object[][] dataInfo1() throws IOException {
@@ -32,38 +32,38 @@ public class CheckDestinationListTest {
         return myObj;
     }
 
-    @Test(dataProvider="dataInfo")
-    public void CheckDestinationListTest(CaseInfo c) throws Exception{
+    @Test(dataProvider = "dataInfo")
+    public void CheckDestinationListTest(CaseInfo c) throws Exception {
 
         //登陆
         LoginHepler loginHelper = new LoginHepler();
         String authorization = loginHelper.loginHepler(c.getCasePreset(), "");
-        System.out.println("凭证:"+authorization);
+        System.out.println("凭证:" + authorization);
 
         //指定http服务地址
-        String httpUrl="http://broker-service.test.apitops.com/broker-service-web/v1/sojourn/destination/list";
+        String httpUrl = "http://broker-service.test.apitops.com/broker-service-web/v1/sojourn/destination/list";
 
         //字符串和字符串数组
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<String, String>();
         map = c.getCaseParam();
-        List<String> list=new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
 
 
         String mystr = "";
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            list.add(entry.getKey()+entry.getValue());
+            list.add(entry.getKey() + entry.getValue());
             //转换成字符串
-            mystr+=entry.getKey()+"="+entry.getValue()+"&";
+            mystr += entry.getKey() + "=" + entry.getValue() + "&";
         }
-        if(mystr.lastIndexOf("&")>0){
-            mystr=mystr.substring(0, mystr.length()-1);
+        if (mystr.lastIndexOf("&") > 0) {
+            mystr = mystr.substring(0, mystr.length() - 1);
         }
         System.out.println(mystr);
         //调用验证服务
-        String ret=TopsUtil.sendGet(httpUrl, mystr, authorization);
+        String ret = TopsUtil.sendGet(httpUrl, mystr, authorization);
 
         //打印结果
-        System.out.println("服务返回结果:"+ret);
+        System.out.println("服务返回结果:" + ret);
         JSONObject sobj = new JSONObject();
         sobj = JSONObject.fromObject(ret);
         //String result = sobj.getString("Code");
