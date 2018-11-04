@@ -13,11 +13,20 @@ import org.testng.xml.XmlSuite;
 
 import java.io.File;
 import java.util.*;
+import java.util.*;
+import java.text.SimpleDateFormat;
+
+
+
+
 
 public class MyExtentTestNgFormatter implements IReporter {
     //生成的路径以及文件名
     private static final String OUTPUT_FOLDER = "test-output/";
-    private static final String FILE_NAME = "index.html";
+
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+    String CurrentTime = df.format(new Date());
+    private final String FILE_NAME = CurrentTime+"TestResult.html";
 
     private ExtentReports extent;
 
